@@ -18,11 +18,11 @@ dicttxt = $(embedFile "data/morsesigns")
 
 main :: IO ()
 main = do
-  -- build dictionary
   --table <- readFile "../data/morsesigns"
-  let splitandrev [v1,v2] = (v2,v1)
-      pairs = Prelude.map (splitandrev.words) (lines (bytesToString(unpack dicttxt)))
-      dict = Data.StringMap.fromList pairs
+  let split [v1,v2] = (v1,v2)
+      splitandrev [v1,v2] = (v2,v1)
+      dict_ct = Data.StringMap.fromList (Prelude.map (splitandrev.words) (lines (bytesToString(unpack dicttxt))))
+      dict_tc = Data.StringMap.fromList (Prelude.map (split.words) (lines (bytesToString(unpack dicttxt))))
   -- init ui
   st <- newIORef (Value "hununu")
   void initGUI
@@ -43,11 +43,11 @@ main = do
   gridSetRowHomogeneous grid True  
   gridSetColumnHomogeneous grid True
   let attach x y w h item = gridAttach grid item x y w h
-      mkBtn = mkButton st displayoutput displayinput dict
+      mkBtn = mkButton st displayoutput displayinput
   attach 0 0 5 1 displayinput
   attach 0 1 5 1 displayoutput
-  mkBtn "code -> text" >>= attach 0 2 1 1
-  mkBtn "text -> code" >>= attach 1 2 1 1
+  mkBtn dict_ct "code -> text" >>= attach 0 2 1 1
+  mkBtn dict_tc "text -> code" >>= attach 1 2 1 1
   containerAdd window grid 
   widgetShowAll window
   -- close window
@@ -75,11 +75,7 @@ mkButton st displayoutput displayinput dict label = do
   set btn [ buttonLabel := label ]
   btn `on` buttonActivated $ do
     test <- entryGetText displayinput :: IO String
-    if label == "code -> text" 
-      then do 
-        updateDisplay displayoutput (Value (translation test dict))
-      else do 
-        updateDisplay displayoutput (Value (translation test dict))
+    updateDisplay displayoutput (Value (translation test dict label))
   return btn
 
 -- | Make calculator's display show given 'Value'.
@@ -92,15 +88,28 @@ renderValue :: Value -> String
 renderValue (Value x) = x
 
 -- | translation function
-translation :: String -> StringMap String -> String
-translation text dict = 
-  transMorse textlist dict
+translation :: String -> StringMap String -> String -> String
+translation text dict label  
+  | label == "code -> text" = do
+      transMorse (words text) dict label
+  | label == "text -> code" = do
+      transMorse (words (addSpace text)) dict label
     where
-      textlist = words text
-      transMorse :: [String] -> StringMap String -> String
-      transMorse [] dict = []
-      transMorse (x:xs) dict = transOne x dict ++ transMorse xs dict
+      --utext = bytesToString (unpack text)
+      transMorse :: [String] -> StringMap String -> String -> String
+      transMorse [] dict label = []
+      transMorse (x:xs) dict label 
+        | label == "code -> text" = do
+            transOne x dict ++ transMorse xs dict label
+        | label == "text -> code" = do 
+            transOne x dict ++ " " ++ transMorse xs dict label
+        | otherwise = transMorse [] dict label
         where
           transOne :: String -> StringMap String -> String
           transOne x dict = unwords (Data.StringMap.lookup x dict)
 
+-- | addSpace function
+addSpace :: String -> String
+addSpace xs = if Prelude.length xs <= 1
+              then xs
+              else Prelude.take 1 xs ++ " " ++ addSpace (Prelude.drop 1 xs)
