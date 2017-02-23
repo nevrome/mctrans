@@ -60,7 +60,7 @@ executable mctrans
   -- other-extensions:    
   
   -- Other library packages from which modules are imported.
-  build-depends:       base >=4.9 && <4.10
+  build-depends:       base >=4.7 && <4.10
                      , gtk3 >= 0.14.6
                      , data-stringmap >= 1.0.1.1
                      , file-embed >= 0.0.10
