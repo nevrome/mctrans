@@ -94,9 +94,8 @@ translation text dict label
   | label == "code -> text" = do
       transMorse (words text) dict label
   | label == "text -> code" = do
-      transMorse (words (addSpace (Prelude.map toUpper text))) dict label
+      transMorse (umlaut (words (addSpace (Prelude.map toUpper text)))) dict label
     where
-      --utext = bytesToString (unpack text)
       transMorse :: [String] -> StringMap String -> String -> String
       transMorse [] dict label = []
       transMorse (x:xs) dict label 
@@ -114,3 +113,16 @@ addSpace :: String -> String
 addSpace xs = if Prelude.length xs <= 1
               then xs
               else Prelude.take 1 xs ++ " " ++ addSpace (Prelude.drop 1 xs)
+
+-- | Umlaut replacement function
+umlaut :: [String] -> [String]
+umlaut [] = []
+umlaut (x:xs) = Prelude.concat (Prelude.map umlautrep (x:xs))
+  where 
+    umlautrep :: String -> [String]
+    umlautrep x 
+      | x == "Ä" || x == "ä" = words (addSpace "AE")
+      | x == "Ö" || x == "ö" = words (addSpace "OE")
+      | x == "Ü" || x == "ü" = words (addSpace "UE")
+      | x == "ß"             = words (addSpace "SS")
+      | otherwise = [x]
