@@ -12,6 +12,7 @@ import Data.Maybe
 import Data.ByteString
 import Data.FileEmbed
 import Language.Haskell.TH.Ppr
+import Data.Char
 
 dicttxt :: ByteString
 dicttxt = $(embedFile "data/morsesigns")
@@ -93,7 +94,7 @@ translation text dict label
   | label == "code -> text" = do
       transMorse (words text) dict label
   | label == "text -> code" = do
-      transMorse (words (addSpace text)) dict label
+      transMorse (words (addSpace (Prelude.map toUpper text))) dict label
     where
       --utext = bytesToString (unpack text)
       transMorse :: [String] -> StringMap String -> String -> String
