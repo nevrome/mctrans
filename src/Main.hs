@@ -1,3 +1,5 @@
+{-# LANGUAGE TemplateHaskell #-}
+
 module Main (main) where
 
 import Control.Monad
@@ -7,13 +9,19 @@ import Graphics.UI.Gtk hiding (Action, backspace)
 import System.IO  
 import Data.StringMap
 import Data.Maybe
+import Data.ByteString
+import Data.FileEmbed
+import Language.Haskell.TH.Ppr
+
+dicttxt :: ByteString
+dicttxt = $(embedFile "data/morsesigns")
 
 main :: IO ()
 main = do
   -- build dictionary
-  table <- readFile "../data/morsesigns"
+  --table <- readFile "../data/morsesigns"
   let splitandrev [v1,v2] = (v2,v1)
-      pairs = Prelude.map (splitandrev.words) (lines table)
+      pairs = Prelude.map (splitandrev.words) (lines (bytesToString(unpack dicttxt)))
       dict = Data.StringMap.fromList pairs
   -- init ui
   st <- newIORef (Value "hununu")
