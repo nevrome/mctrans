@@ -35,10 +35,19 @@ main = do
   -- create code and text fields
   displayinput <- entryNew
   set displayinput [ entryEditable := True
-                   , entryText     := ".. -.-. .... -... .. -. . .. -. -... .-. --- - ----. ---.." ]
+                   , entryText     := ".. -.-. .... -... .. -. . .. -. -... .-. --- -" ]
   displayoutput <- entryNew
   set displayoutput [ entryEditable := False
                     , entryText     := "" ]
+  shortsign <- entryNew
+  set shortsign [ entryEditable := True
+                   , entryText     := "." ]
+  longsign <- entryNew
+  set longsign [ entryEditable := True
+                   , entryText     := "-" ]
+  sepsign <- entryNew
+  set sepsign [ entryEditable := True
+                   , entryText     := "/" ]
   -- create widget grid and add widgets
   grid <- gridNew                  
   gridSetRowHomogeneous grid True  
@@ -47,6 +56,9 @@ main = do
       mkBtn = mkButton st displayoutput displayinput
   attach 0 0 5 1 displayinput
   attach 0 1 5 1 displayoutput
+  attach 2 2 1 1 shortsign
+  attach 3 2 1 1 longsign
+  attach 4 2 1 1 sepsign
   mkBtn dict_ct "code -> text" >>= attach 0 2 1 1
   mkBtn dict_tc "text -> code" >>= attach 1 2 1 1
   containerAdd window grid 
