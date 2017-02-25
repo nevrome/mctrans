@@ -53,7 +53,7 @@ main = do
   gridSetRowHomogeneous grid True  
   gridSetColumnHomogeneous grid True
   let attach x y w h item = gridAttach grid item x y w h
-      mkBtn = mkButton st displayoutput displayinput
+      mkBtn = mkButton st displayoutput displayinput shortsign longsign sepsign
   attach 0 0 5 1 displayinput
   attach 0 1 5 1 displayoutput
   attach 2 2 1 1 shortsign
@@ -80,15 +80,21 @@ mkButton
   :: IORef Value       -- ^ 'IORef' to calculator state
   -> Entry             -- ^ input text
   -> Entry             -- ^ Our display to update
+  -> Entry            -- ^ shortsign
+  -> Entry            -- ^ longsign
+  -> Entry            -- ^ sepsign
   -> StringMap String  -- ^ dictionary
   -> String            -- ^ Button label
   -> IO Button         -- ^ Resulting button object
-mkButton st displayoutput displayinput dict label = do
+mkButton st displayoutput displayinput shortsign longsign sepsign dict label = do
   btn <- buttonNew
   set btn [ buttonLabel := label ]
   btn `on` buttonActivated $ do
-    test <- entryGetText displayinput :: IO String
-    updateDisplay displayoutput (Value (translation test dict label))
+    displayinput <- entryGetText displayinput :: IO String
+    shortsign <- entryGetText shortsign :: IO String
+    longsign <- entryGetText longsign :: IO String
+    sepsign <- entryGetText sepsign :: IO String
+    updateDisplay displayoutput (Value (translation displayinput shortsign longsign sepsign dict label))
   return btn
 
 -- | Make calculator's display show given 'Value'.
@@ -101,12 +107,19 @@ renderValue :: Value -> String
 renderValue (Value x) = x
 
 -- | translation function
-translation :: String -> StringMap String -> String -> String
-translation text dict label  
+translation 
+  :: String 
+  -> String            -- ^ shortsign
+  -> String            -- ^ longsign
+  -> String            -- ^ sepsign
+  -> StringMap String 
+  -> String 
+  -> String
+translation displayinput shortsign longsign sepsign dict label  
   | label == "code -> text" = do
-      transMorse (words text) dict label
+      transMorse (words (codeadjust displayinput shortsign longsign sepsign)) dict label
   | label == "text -> code" = do
-      transMorse (umlaut (words (addSpace (Prelude.map toUpper text)))) dict label
+      transMorse (umlaut (words (addSpace (Prelude.map toUpper displayinput)))) dict label
     where
       transMorse :: [String] -> StringMap String -> String -> String
       transMorse [] dict label = []
@@ -137,4 +150,17 @@ umlaut (x:xs) = Prelude.concat (Prelude.map umlautrep (x:xs))
       | x == "Ö" || x == "ö" = words (addSpace "OE")
       | x == "Ü" || x == "ü" = words (addSpace "UE")
       | x == "ß"             = words (addSpace "SS")
+      | otherwise = [x]
+
+-- | code adjust function
+codeadjust :: String -> String -> String -> String -> String
+codeadjust [] shortsign longsign sepsign = []
+codeadjust (x:xs) shortsign longsign sepsign = 
+  replacecode x shortsign longsign sepsign ++ codeadjust xs shortsign longsign sepsign
+  where
+    replacecode :: Char -> String -> String -> String -> [Char]
+    replacecode x shortsign longsign sepsign
+      | x == Prelude.head shortsign = "."
+      | x == Prelude.head longsign = "-"
+      | x == Prelude.head sepsign = "/"
       | otherwise = [x]
