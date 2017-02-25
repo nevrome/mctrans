@@ -35,10 +35,10 @@ main = do
   -- create code and text fields
   displayinput <- entryNew
   set displayinput [ entryEditable := True
-                   , entryText     := ".. -.-. .... -... .. -. . .. -. -... .-. --- -" ]
+                   , entryText     := "zu übersetzenden Text hier eingeben" ]
   displayoutput <- entryNew
   set displayoutput [ entryEditable := False
-                    , entryText     := "" ]
+                    , entryText     := "hier wird das Ergebnis ausgegeben" ]
   shortsign <- entryNew
   set shortsign [ entryEditable := True
                    , entryText     := "." ]
@@ -117,27 +117,42 @@ translation
   -> String
 translation displayinput shortsign longsign sepsign dict label  
   | label == "code -> text" = do
-      transMorse (words (codeadjust displayinput shortsign longsign sepsign)) dict label
+      transMorse (words (codeadjust displayinput shortsign longsign sepsign)) dict label sepsign
   | label == "text -> code" = do
-      transMorse (umlaut (words (addSpace (Prelude.map toUpper displayinput)))) dict label
+      transMorse (umlaut (words (addSpace (Prelude.map toUpper (spaceReplace displayinput sepsign))))) dict label sepsign
     where
-      transMorse :: [String] -> StringMap String -> String -> String
-      transMorse [] dict label = []
-      transMorse (x:xs) dict label 
+      transMorse :: [String] -> StringMap String -> String -> String -> String
+      transMorse [] dict label sepsign = []
+      transMorse (x:xs) dict label sepsign
         | label == "code -> text" = do
-            transOne x dict ++ transMorse xs dict label
+            trans_ct x dict sepsign ++ transMorse xs dict label sepsign
         | label == "text -> code" = do 
-            transOne x dict ++ " " ++ transMorse xs dict label
-        | otherwise = transMorse [] dict label
+            trans_tc x dict sepsign ++ " " ++ transMorse xs dict label sepsign
         where
-          transOne :: String -> StringMap String -> String
-          transOne x dict = unwords (Data.StringMap.lookup x dict)
+          trans_ct :: String -> StringMap String -> String -> String
+          trans_ct x dict sepsign
+            | x == sepsign = " "
+            | otherwise = unwords (Data.StringMap.lookup x dict)
+          trans_tc :: String -> StringMap String -> String -> String
+          trans_tc x dict sepsign
+            | x == sepsign = sepsign
+            | otherwise = unwords (Data.StringMap.lookup x dict)
 
 -- | addSpace function
 addSpace :: String -> String
 addSpace xs = if Prelude.length xs <= 1
               then xs
               else Prelude.take 1 xs ++ " " ++ addSpace (Prelude.drop 1 xs)
+
+spaceReplace :: String -> String -> String
+spaceReplace [] sepsign = []
+spaceReplace (x:xs) sepsign = 
+  replacecode x sepsign ++ spaceReplace xs sepsign
+  where
+    replacecode :: Char -> String -> [Char]
+    replacecode x sepsign
+      | x == ' ' = sepsign
+      | otherwise = [x]
 
 -- | Umlaut replacement function
 umlaut :: [String] -> [String]
@@ -162,5 +177,4 @@ codeadjust (x:xs) shortsign longsign sepsign =
     replacecode x shortsign longsign sepsign
       | x == Prelude.head shortsign = "."
       | x == Prelude.head longsign = "-"
-      | x == Prelude.head sepsign = "/"
       | otherwise = [x]
