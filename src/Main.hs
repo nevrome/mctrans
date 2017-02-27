@@ -22,8 +22,8 @@ main = do
   --table <- readFile "../data/morsesigns"
   let split [v1,v2] = (v1,v2)
       splitandrev [v1,v2] = (v2,v1)
-      dict_ct = Data.StringMap.fromList (Prelude.map (splitandrev.words) (lines (bytesToString(unpack dicttxt))))
-      dict_tc = Data.StringMap.fromList (Prelude.map (split.words) (lines (bytesToString(unpack dicttxt))))
+      dict_ct = Data.StringMap.fromList (Prelude.map (splitandrev.words) ((lines . bytesToString . unpack) dicttxt))
+      dict_tc = Data.StringMap.fromList (Prelude.map (split.words) ((lines . bytesToString . unpack) dicttxt))
   -- init ui
   st <- newIORef (Value "hununu")
   void initGUI
