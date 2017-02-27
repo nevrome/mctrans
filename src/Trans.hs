@@ -14,9 +14,9 @@ translation
   -> String
 translation displayinput shortsign longsign sepsign dict label  
   | label == "code -> text" = do
-      transMorse (words (codeadjust displayinput shortsign longsign sepsign)) dict label sepsign
+      transMorse (words $ codeadjust displayinput shortsign longsign sepsign) dict label sepsign
   | label == "text -> code" = do
-      transMorse (umlaut (words (addSpace (Prelude.map toUpper (spaceReplace displayinput sepsign))))) dict label sepsign
+      transMorse (umlaut . words . addSpace . toUpperString $ spaceReplace displayinput sepsign) dict label sepsign
     where
       transMorse :: [String] -> StringMap String -> String -> String -> String
       transMorse [] dict label sepsign = []
@@ -75,3 +75,8 @@ codeadjust (x:xs) shortsign longsign sepsign =
       | x == Prelude.head shortsign = "."
       | x == Prelude.head longsign = "-"
       | otherwise = [x]
+
+-- | Maske für map toUpper _ 
+toUpperString :: String -> String
+toUpperString [] = []
+toUpperString xs = Prelude.map toUpper xs
