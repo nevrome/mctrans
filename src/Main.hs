@@ -15,17 +15,18 @@ import Language.Haskell.TH.Ppr
 import Data.Char
 import Trans
 
+-- | Embed dictionary text file via Data.FileEmbed
 dicttxt :: ByteString
 dicttxt = $(embedFile "data/morsesigns")
 
 main :: IO ()
 main = do
-  --table <- readFile "../data/morsesigns"
+  -- read and parse dictionary file into Data.Stringmap 
   let split [v1,v2] = (v1,v2)
       splitandrev [v1,v2] = (v2,v1)
       dict_ct = Data.StringMap.fromList (Prelude.map (splitandrev.words) ((lines . bytesToString . unpack) dicttxt))
       dict_tc = Data.StringMap.fromList (Prelude.map (split.words) ((lines . bytesToString . unpack) dicttxt))
-  -- init ui
+  -- init user interface
   st <- newIORef (Value "hununu")
   void initGUI
   -- create window
@@ -72,21 +73,20 @@ main = do
   -- main loop
   mainGUI
 
-
--- | 'Value'
+-- | 'Value' data type
 data Value = Value String
 
 -- | Create a button 
 mkButton
-  :: IORef Value       -- ^ 'IORef' to calculator state
-  -> Entry             -- ^ input text
-  -> Entry             -- ^ Our display to update
+  :: IORef Value      -- ^ 'IORef' to input state
+  -> Entry            -- ^ input text
+  -> Entry            -- ^ Our display to update
   -> Entry            -- ^ shortsign
   -> Entry            -- ^ longsign
   -> Entry            -- ^ sepsign
-  -> StringMap String  -- ^ dictionary
-  -> String            -- ^ Button label
-  -> IO Button         -- ^ Resulting button object
+  -> StringMap String -- ^ dictionary
+  -> String           -- ^ Button label
+  -> IO Button        -- ^ Resulting button object
 mkButton st displayoutput displayinput shortsign longsign sepsign dict label = do
   btn <- buttonNew
   set btn [ buttonLabel := label ]
@@ -98,7 +98,7 @@ mkButton st displayoutput displayinput shortsign longsign sepsign dict label = d
     updateDisplay displayoutput (Value (translation displayinput shortsign longsign sepsign dict label))
   return btn
 
--- | Make calculator's display show given 'Value'.
+-- | Make output display show given 'Value'.
 updateDisplay :: Entry -> Value -> IO ()
 updateDisplay displayoutput value =
   set displayoutput [ entryText := renderValue value ]

@@ -5,12 +5,12 @@ import Data.Char
 
 -- | translation function
 translation 
-  :: String 
-  -> String            -- ^ shortsign
-  -> String            -- ^ longsign
-  -> String            -- ^ sepsign
-  -> StringMap String 
-  -> String 
+  :: String            -- ^ displayinput: text to be translated
+  -> String            -- ^ shortsign: sign used for "short"
+  -> String            -- ^ longsign: sign used for "long"
+  -> String            -- ^ sepsign: sign used for "separator"
+  -> StringMap String  -- ^ dict: dictionary file
+  -> String            -- ^ label: button label
   -> String
 translation displayinput shortsign longsign sepsign dict label  
   | label == "code -> text" = do
@@ -35,7 +35,7 @@ translation displayinput shortsign longsign sepsign dict label
             | x == sepsign = sepsign
             | otherwise = unwords (Data.StringMap.lookup x dict)
 
--- | addSpace function
+-- | Add space between every char in String 
 addSpace :: String -> String
 addSpace xs = if Prelude.length xs <= 1
               then xs
@@ -64,7 +64,7 @@ umlaut (x:xs) = Prelude.concat (Prelude.map umlautrep (x:xs))
       | x == "ß"             = words (addSpace "SS")
       | otherwise = [x]
 
--- | code adjust function
+-- | Replace long and short signs with "." and "-"
 codeadjust :: String -> String -> String -> String -> String
 codeadjust [] shortsign longsign sepsign = []
 codeadjust (x:xs) shortsign longsign sepsign = 
