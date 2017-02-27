@@ -5,3 +5,11 @@
 Just an other morse code translator.
 
 Small exercise project to learn Haskell and GUI programming. 
+
+# Installation
+
+```
+cabal configure
+
+cabal run
+```
