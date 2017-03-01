@@ -64,11 +64,11 @@ main = do
   gridSetColumnHomogeneous grid True
   let attach x y w h item = gridAttach grid item x y w h
       mkBtn = mkButton st displayoutput displayinput shortsign longsign sepsign
-  attach 0 0 6 4 displayinput
+  attach 0 0 5 4 displayinput
   attach 0 4 6 4 displayoutput
   attach 3 8 1 1 frame1
-  mkBtn dict_ct "code -> text" >>= attach 0 9 1 2
-  mkBtn dict_tc "text -> code" >>= attach 1 9 1 2
+  mkBtn dict_tc "text -> code" >>= attach 5 0 1 2
+  mkBtn dict_ct "code -> text" >>= attach 5 2 1 2
   attach 2 9 1 2 shortsign
   attach 3 9 1 2 longsign
   attach 4 9 1 2 sepsign
