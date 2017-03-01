@@ -2,21 +2,22 @@
 
 module Main (main) where
 
+import Prelude
 import Control.Monad
 import Control.Monad.IO.Class
 import Data.IORef
 import Graphics.UI.Gtk hiding (Action, backspace)
 import System.IO  
-import Data.StringMap
+import qualified Data.StringMap --hiding (map)
 import Data.Maybe
-import Data.ByteString
+import qualified Data.ByteString
 import Data.FileEmbed
 import Language.Haskell.TH.Ppr
 import Data.Char
 import Trans
 
 -- | Embed dictionary text file via Data.FileEmbed
-dicttxt :: ByteString
+dicttxt :: Data.ByteString.ByteString
 dicttxt = $(embedFile "data/morsesigns")
 
 main :: IO ()
@@ -24,8 +25,8 @@ main = do
   -- read and parse dictionary file into Data.Stringmap 
   let split [v1,v2] = (v1,v2)
       splitandrev [v1,v2] = (v2,v1)
-      dict_ct = Data.StringMap.fromList (Prelude.map (splitandrev.words) ((lines . bytesToString . unpack) dicttxt))
-      dict_tc = Data.StringMap.fromList (Prelude.map (split.words) ((lines . bytesToString . unpack) dicttxt))
+      dict_ct = Data.StringMap.fromList (map (splitandrev.words) ((lines . bytesToString . Data.ByteString.unpack) dicttxt))
+      dict_tc = Data.StringMap.fromList (map (split.words) ((lines . bytesToString . Data.ByteString.unpack) dicttxt))
   -- init user interface
   st <- newIORef (Value "hununu")
   void initGUI
@@ -84,7 +85,7 @@ mkButton
   -> Entry            -- ^ shortsign
   -> Entry            -- ^ longsign
   -> Entry            -- ^ sepsign
-  -> StringMap String -- ^ dictionary
+  -> Data.StringMap.StringMap String -- ^ dictionary
   -> String           -- ^ Button label
   -> IO Button        -- ^ Resulting button object
 mkButton st displayoutput displayinput shortsign longsign sepsign dict label = do
