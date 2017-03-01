@@ -36,32 +36,36 @@ main = do
              , windowDefaultWidth  := 700
              , windowDefaultHeight := 500 ]
   -- create code and text fields
-  displayinput <- entryNew
-  set displayinput [ entryEditable := True
-                   , entryText     := "zu übersetzenden Text hier eingeben" ]
-  displayoutput <- entryNew
+  displayinput      <- entryNew
+  set displayinput  [ entryEditable := True
+                    , entryText     := "zu übersetzenden Text hier eingeben" ]
+  displayoutput     <- entryNew
   set displayoutput [ entryEditable := False
                     , entryText     := "hier wird das Ergebnis ausgegeben" ]
-  shortsign <- entryNew
-  set shortsign [ entryEditable := True
-                   , entryText     := "." ]
-  longsign <- entryNew
-  set longsign [ entryEditable := True
-                   , entryText     := "-" ]
-  sepsign <- entryNew
-  set sepsign [ entryEditable := True
-                   , entryText     := "/" ]
+  shortsign         <- entryNew
+  set shortsign     [ entryEditable := True
+                    , entryText     := "." ]
+  longsign          <- entryNew
+  set longsign      [ entryEditable := True
+                    , entryText     := "-" ]
+  sepsign           <- entryNew
+  set sepsign       [ entryEditable := True
+                    , entryText     := "/" ]
+  linesepsign       <- entryNew
+  set linesepsign   [ entryEditable := True
+                    , entryText     := "n" ]
   -- create widget grid and add widgets
   grid <- gridNew                  
   gridSetRowHomogeneous grid True  
   gridSetColumnHomogeneous grid True
   let attach x y w h item = gridAttach grid item x y w h
       mkBtn = mkButton st displayoutput displayinput shortsign longsign sepsign
-  attach 0 0 5 1 displayinput
-  attach 0 1 5 1 displayoutput
+  attach 0 0 6 1 displayinput
+  attach 0 1 6 1 displayoutput
   attach 2 2 1 1 shortsign
   attach 3 2 1 1 longsign
   attach 4 2 1 1 sepsign
+  attach 5 2 1 1 linesepsign
   mkBtn dict_ct "code -> text" >>= attach 0 2 1 1
   mkBtn dict_tc "text -> code" >>= attach 1 2 1 1
   containerAdd window grid 
