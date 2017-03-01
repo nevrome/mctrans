@@ -32,9 +32,13 @@ main = do
   void initGUI
   -- create window
   window <- windowNew
-  set window [ windowTitle         := "Morse Code Translator"
-             , windowDefaultWidth  := 700
-             , windowDefaultHeight := 500 ]
+  set window [ windowTitle          := "Morse Code Translator"
+             , windowDefaultWidth   := 700
+             , windowDefaultHeight  := 500 
+             , containerBorderWidth := 10]
+  -- create labels 
+  (label1,frame1) <- myLabelWithFrameNew
+  labelSetText label1 "short sign"
   -- create code and text fields
   displayinput      <- entryNew
   set displayinput  [ entryEditable := True
@@ -60,14 +64,15 @@ main = do
   gridSetColumnHomogeneous grid True
   let attach x y w h item = gridAttach grid item x y w h
       mkBtn = mkButton st displayoutput displayinput shortsign longsign sepsign
-  attach 0 0 6 1 displayinput
-  attach 0 1 6 1 displayoutput
-  attach 2 2 1 1 shortsign
-  attach 3 2 1 1 longsign
-  attach 4 2 1 1 sepsign
-  attach 5 2 1 1 linesepsign
-  mkBtn dict_ct "code -> text" >>= attach 0 2 1 1
-  mkBtn dict_tc "text -> code" >>= attach 1 2 1 1
+  attach 0 0 6 4 displayinput
+  attach 0 4 6 4 displayoutput
+  attach 3 8 1 1 frame1
+  mkBtn dict_ct "code -> text" >>= attach 0 9 1 2
+  mkBtn dict_tc "text -> code" >>= attach 1 9 1 2
+  attach 2 9 1 2 shortsign
+  attach 3 9 1 2 longsign
+  attach 4 9 1 2 sepsign
+  attach 5 9 1 2 linesepsign
   containerAdd window grid 
   widgetShowAll window
   -- close window
@@ -111,3 +116,11 @@ updateDisplay displayoutput value =
 -- | Render given 'Value'.
 renderValue :: Value -> String
 renderValue (Value x) = x
+
+myLabelWithFrameNew :: IO (Label,Frame)
+myLabelWithFrameNew = do
+  label <- labelNew (Nothing :: Maybe String)
+  frame <- frameNew
+  containerAdd frame label
+  frameSetShadowType frame ShadowNone
+  return (label, frame)
