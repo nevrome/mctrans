@@ -16,7 +16,8 @@ translation displayinput shortsign longsign sepsign dict label
   | label == "code -> text" = do
       transMorse (words $ codeadjust displayinput shortsign longsign sepsign) dict label sepsign
   | label == "text -> code" = do
-      transMorse (umlaut . words . addSpace . toUpperString $ spaceReplace displayinput sepsign) dict label sepsign
+      transMorse (words . addSpace . umlaut2 . toUpperString $ spaceReplace displayinput sepsign) dict label sepsign
+      -- transMorse (umlaut . words . addSpace . toUpperString $ spaceReplace displayinput sepsign) dict label sepsign
     where
       transMorse :: [String] -> Data.StringMap.StringMap String -> String -> String -> String
       transMorse [] dict label sepsign = []
@@ -52,29 +53,29 @@ spaceReplace (x:xs) sepsign =
       | otherwise = [x]
 
 -- | Umlaut replacement function
-umlaut :: [String] -> [String]
-umlaut [] = []
-umlaut (x:xs) = concat (map umlautrep (x:xs))
-  where 
-    umlautrep :: String -> [String]
-    umlautrep x 
-      | x == "Ä" || x == "ä" = words (addSpace "AE")
-      | x == "Ö" || x == "ö" = words (addSpace "OE")
-      | x == "Ü" || x == "ü" = words (addSpace "UE")
-      | x == "ß"             = words (addSpace "SS")
-      | otherwise = [x]
-
---umlaut2 :: String -> String
---umlaut2 [] = []
---umlaut2 (x:xs) = unwords (concat (map umlautrep2 (x:xs)))
+--umlaut :: [String] -> [String]
+--umlaut [] = []
+--umlaut (x:xs) = concat (map umlautrep (x:xs))
 --  where 
---    umlautrep2 :: String -> [String]
---    umlautrep2 x 
+--    umlautrep :: String -> [String]
+--    umlautrep x 
 --      | x == "Ä" || x == "ä" = words (addSpace "AE")
 --      | x == "Ö" || x == "ö" = words (addSpace "OE")
 --      | x == "Ü" || x == "ü" = words (addSpace "UE")
 --      | x == "ß"             = words (addSpace "SS")
 --      | otherwise = [x]
+
+umlaut2 :: String -> String
+umlaut2 [] = []
+umlaut2 xs = concat (map umlautrep2 xs)
+  where 
+    umlautrep2 :: Char -> [Char]
+    umlautrep2 x 
+      | x == 'Ä' || x == 'ä' = "AE"
+      | x == 'Ö' || x == 'ö' = "OE"
+      | x == 'Ü' || x == 'ü' = "UE"
+      | x == 'ß'             = "SS"
+      | otherwise = [x]
 
 
 -- | Replace long and short signs with "." and "-"
