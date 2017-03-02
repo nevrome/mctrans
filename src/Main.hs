@@ -37,15 +37,21 @@ main = do
              , windowDefaultHeight  := 500 
              , containerBorderWidth := 10]
   -- create labels 
-  (label1,frame1) <- myLabelWithFrameNew
-  labelSetText label1 "short sign"
+  (shortlabel,shortframe) <- myLabelWithFrameNew
+  labelSetText shortlabel "short sign"
+  (longlabel,longframe) <- myLabelWithFrameNew
+  labelSetText longlabel "long sign"
+  (seplabel,sepframe) <- myLabelWithFrameNew
+  labelSetText seplabel "word separation sign"
+  (linelabel,lineframe) <- myLabelWithFrameNew
+  labelSetText linelabel "line break sign"
   -- create code and text fields
   displayinput      <- entryNew
   set displayinput  [ entryEditable := True
-                    , entryText     := "zu übersetzenden Text hier eingeben" ]
+                    , entryText     := "enter text/code to be translated here: Fußpilz or ..-. ..- ... ... .--. .. .-.. --.." ]
   displayoutput     <- entryNew
   set displayoutput [ entryEditable := False
-                    , entryText     := "hier wird das Ergebnis ausgegeben" ]
+                    , entryText     := "translation" ]
   shortsign         <- entryNew
   set shortsign     [ entryEditable := True
                     , entryText     := "." ]
@@ -66,7 +72,10 @@ main = do
       mkBtn = mkButton st displayoutput displayinput shortsign longsign sepsign
   attach 0 0 5 4 displayinput
   attach 0 4 6 4 displayoutput
-  attach 3 8 1 1 frame1
+  attach 2 8 1 1 shortframe
+  attach 3 8 1 1 longframe
+  attach 4 8 1 1 sepframe
+  attach 5 8 1 1 lineframe
   mkBtn dict_tc "text -> code" >>= attach 5 0 1 2
   mkBtn dict_ct "code -> text" >>= attach 5 2 1 2
   attach 2 9 1 2 shortsign
@@ -117,6 +126,7 @@ updateDisplay displayoutput value =
 renderValue :: Value -> String
 renderValue (Value x) = x
 
+-- | Create label 
 myLabelWithFrameNew :: IO (Label,Frame)
 myLabelWithFrameNew = do
   label <- labelNew (Nothing :: Maybe String)
