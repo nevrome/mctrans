@@ -46,31 +46,31 @@ main = do
   (linelabel,lineframe) <- myLabelWithFrameNew
   labelSetText linelabel "line break sign"
   -- create code and text fields
-  displayinput      <- entryNew
-  set displayinput  [ entryEditable := True
-                    , entryText     := "enter text/code to be translated here: Fußpilz or ..-. ..- ... ... .--. .. .-.. --.." ]
+  displayinput      <- textBufferNew Nothing
+  displayinputview  <- textViewNewWithBuffer displayinput
+  set displayinput  [ textBufferText := "enter text/code to be translated here: Fußpilz or ..-. ..- ... ... .--. .. .-.. --.." ]
   displayoutput     <- entryNew
-  set displayoutput [ entryEditable := False
-                    , entryText     := "translation" ]
+  set displayoutput [ entryEditable  := False
+                    , entryText      := "translation" ]
   shortsign         <- entryNew
-  set shortsign     [ entryEditable := True
-                    , entryText     := "." ]
+  set shortsign     [ entryEditable  := True
+                    , entryText      := "." ]
   longsign          <- entryNew
-  set longsign      [ entryEditable := True
-                    , entryText     := "-" ]
+  set longsign      [ entryEditable  := True
+                    , entryText      := "-" ]
   sepsign           <- entryNew
-  set sepsign       [ entryEditable := True
-                    , entryText     := "/" ]
+  set sepsign       [ entryEditable  := True
+                    , entryText      := "/" ]
   linesepsign       <- entryNew
-  set linesepsign   [ entryEditable := True
-                    , entryText     := "n" ]
+  set linesepsign   [ entryEditable  := True
+                    , entryText      := "n" ]
   -- create widget grid and add widgets
   grid <- gridNew                  
   gridSetRowHomogeneous grid True  
   gridSetColumnHomogeneous grid True
   let attach x y w h item = gridAttach grid item x y w h
       mkBtn = mkButton st displayoutput displayinput shortsign longsign sepsign
-  attach 0 0 5 4 displayinput
+  attach 0 0 5 4 displayinputview
   attach 0 4 6 4 displayoutput
   attach 2 8 1 1 shortframe
   attach 3 8 1 1 longframe
@@ -98,8 +98,8 @@ data Value = Value String
 -- | Create a button 
 mkButton
   :: IORef Value      -- ^ 'IORef' to input state
-  -> Entry            -- ^ input text
   -> Entry            -- ^ Our display to update
+  -> TextBuffer       -- ^ input text
   -> Entry            -- ^ shortsign
   -> Entry            -- ^ longsign
   -> Entry            -- ^ sepsign
@@ -110,7 +110,7 @@ mkButton st displayoutput displayinput shortsign longsign sepsign dict label = d
   btn <- buttonNew
   set btn [ buttonLabel := label ]
   btn `on` buttonActivated $ do
-    displayinput <- entryGetText displayinput :: IO String
+    displayinput <- get displayinput textBufferText-- textBufferGetText displayinput  True :: IO String
     shortsign <- entryGetText shortsign :: IO String
     longsign <- entryGetText longsign :: IO String
     sepsign <- entryGetText sepsign :: IO String
