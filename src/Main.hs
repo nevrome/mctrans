@@ -47,11 +47,13 @@ main = do
   labelSetText linelabel "line break sign"
   -- create code and text fields
   displayinput      <- textBufferNew Nothing
-  displayinputview  <- textViewNewWithBuffer displayinput
   set displayinput  [ textBufferText := "enter text/code to be translated here: Fußpilz or ..-. ..- ... ... .--. .. .-.. --.." ]
-  displayoutput     <- entryNew
-  set displayoutput [ entryEditable  := False
-                    , entryText      := "translation" ]
+  displayinputview  <- textViewNewWithBuffer displayinput
+  set displayinputview [textViewWrapMode := WrapWord]
+  displayoutput     <- textBufferNew Nothing
+  set displayoutput [ textBufferText := "translation" ]
+  displayoutputview <- textViewNewWithBuffer displayoutput
+  set displayoutputview [textViewWrapMode := WrapWord]
   shortsign         <- entryNew
   set shortsign     [ entryEditable  := True
                     , entryText      := "." ]
@@ -71,7 +73,7 @@ main = do
   let attach x y w h item = gridAttach grid item x y w h
       mkBtn = mkButton st displayoutput displayinput shortsign longsign sepsign
   attach 0 0 5 4 displayinputview
-  attach 0 4 6 4 displayoutput
+  attach 0 4 6 4 displayoutputview
   attach 2 8 1 1 shortframe
   attach 3 8 1 1 longframe
   attach 4 8 1 1 sepframe
@@ -98,7 +100,7 @@ data Value = Value String
 -- | Create a button 
 mkButton
   :: IORef Value      -- ^ 'IORef' to input state
-  -> Entry            -- ^ Our display to update
+  -> TextBuffer       -- ^ Our display to update
   -> TextBuffer       -- ^ input text
   -> Entry            -- ^ shortsign
   -> Entry            -- ^ longsign
@@ -110,7 +112,7 @@ mkButton st displayoutput displayinput shortsign longsign sepsign dict label = d
   btn <- buttonNew
   set btn [ buttonLabel := label ]
   btn `on` buttonActivated $ do
-    displayinput <- get displayinput textBufferText-- textBufferGetText displayinput  True :: IO String
+    displayinput <- get displayinput textBufferText
     shortsign <- entryGetText shortsign :: IO String
     longsign <- entryGetText longsign :: IO String
     sepsign <- entryGetText sepsign :: IO String
@@ -118,9 +120,9 @@ mkButton st displayoutput displayinput shortsign longsign sepsign dict label = d
   return btn
 
 -- | Make output display show given 'Value'.
-updateDisplay :: Entry -> Value -> IO ()
+updateDisplay :: TextBuffer -> Value -> IO ()
 updateDisplay displayoutput value =
-  set displayoutput [ entryText := renderValue value ]
+  set displayoutput [ textBufferText := renderValue value ]
 
 -- | Render given 'Value'.
 renderValue :: Value -> String
