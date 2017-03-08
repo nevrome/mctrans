@@ -29,11 +29,15 @@ translation displayinput shortsign longsign sepsign dict label
           trans_ct :: String -> Data.StringMap.StringMap String -> String -> String
           trans_ct x dict sepsign
             | x == sepsign = " "
-            | otherwise = unwords (Data.StringMap.lookup x dict)
+            | otherwise = do 
+                let res = unwords (Data.StringMap.lookup x dict)
+                if (length res) > 0 then res else x 
           trans_tc :: String -> Data.StringMap.StringMap String -> String -> String
           trans_tc x dict sepsign
             | x == sepsign = sepsign
-            | otherwise = unwords (Data.StringMap.lookup x dict)
+            | otherwise = do 
+                let res = unwords (Data.StringMap.lookup x dict)
+                if (length res) > 0 then res else x 
 
 -- | Add space between every char in String 
 addSpace :: String -> String
