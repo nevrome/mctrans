@@ -43,8 +43,6 @@ main = do
   labelSetText longlabel "long sign"
   (seplabel,sepframe) <- myLabelWithFrameNew
   labelSetText seplabel "word separation sign"
-  (linelabel,lineframe) <- myLabelWithFrameNew
-  labelSetText linelabel "line break sign"
   -- create code and text fields
   displayinput      <- textBufferNew Nothing
   set displayinput  [ textBufferText := "enter text/code to be translated here: Fußpilz or ..-. ..- ... ... .--. .. .-.. --.." ]
@@ -63,9 +61,6 @@ main = do
   sepsign           <- entryNew
   set sepsign       [ entryEditable  := True
                     , entryText      := "/" ]
-  linesepsign       <- entryNew
-  set linesepsign   [ entryEditable  := True
-                    , entryText      := "n" ]
   -- create widget grid and add widgets
   grid <- gridNew                  
   gridSetRowHomogeneous grid True  
@@ -74,16 +69,14 @@ main = do
       mkBtn = mkButton st displayoutput displayinput shortsign longsign sepsign
   attach 0 0 5 4 displayinputview
   attach 0 4 6 4 displayoutputview
-  attach 2 8 1 1 shortframe
-  attach 3 8 1 1 longframe
-  attach 4 8 1 1 sepframe
-  attach 5 8 1 1 lineframe
+  attach 3 8 1 1 shortframe
+  attach 4 8 1 1 longframe
+  attach 5 8 1 1 sepframe
   mkBtn dict_tc "text -> code" >>= attach 5 0 1 2
   mkBtn dict_ct "code -> text" >>= attach 5 2 1 2
-  attach 2 9 1 2 shortsign
-  attach 3 9 1 2 longsign
-  attach 4 9 1 2 sepsign
-  attach 5 9 1 2 linesepsign
+  attach 3 9 1 2 shortsign
+  attach 4 9 1 2 longsign
+  attach 5 9 1 2 sepsign
   containerAdd window grid 
   widgetShowAll window
   -- close window
