@@ -28,3 +28,6 @@ cabal.sandbox.config
 *.eventlog
 .stack-work/
 cabal.project.local
+
+### rendered .md-files
+*.html 

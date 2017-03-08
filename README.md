@@ -4,7 +4,7 @@
 
 Just an other morse code translator.
 
-Small exercise project to learn Haskell and GUI programming. 
+Small project to learn Haskell and GUI programming. 
 
 # Installation
 
@@ -13,3 +13,8 @@ cabal configure
 
 cabal run
 ```
+
+# Screenshots
+
+![Screenshot of mctrans](https://raw.githubusercontent.com/nevrome/mctrans/master/screenshots/screen1.png)
+
