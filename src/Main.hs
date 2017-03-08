@@ -29,7 +29,7 @@ main = do
       dict_ct = Data.StringMap.fromList (map (splitandrev.words) ((lines . bytesToString . Data.ByteString.unpack) dicttxt))
       dict_tc = Data.StringMap.fromList (map (split.words) ((lines . bytesToString . Data.ByteString.unpack) dicttxt))
   -- init user interface
-  st <- newIORef (Value "hununu")
+  st <- newIORef (Value "")
   void initGUI
   -- create window
   window <- windowNew
@@ -52,12 +52,12 @@ main = do
   labelSetText outlabel "Output"
   -- create code and text fields
   displayinput      <- textBufferNew Nothing
-  set displayinput  [ textBufferText := "enter text/code to be translated here: Fußpilz or ..-. ..- ... ... .--. .. .-.. --.." ]
+  set displayinput  [ textBufferText := ".-- ..- .-. ... - -... .-. --- - !" ]
   displayinputview  <- textViewNewWithBuffer displayinput
   set displayinputview [ textViewWrapMode := WrapWord
                        , textViewEditable := True ]
   displayoutput     <- textBufferNew Nothing
-  set displayoutput [ textBufferText := "translation" ]
+  set displayoutput [ textBufferText := "" ]
   displayoutputview <- textViewNewWithBuffer displayoutput
   set displayoutputview [textViewWrapMode := WrapWord]
   shortsign         <- entryNew
