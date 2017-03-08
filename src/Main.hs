@@ -116,7 +116,7 @@ mkButton st displayoutput displayinput shortsign longsign sepsign dict label = d
     shortsign <- entryGetText shortsign :: IO String
     longsign <- entryGetText longsign :: IO String
     sepsign <- entryGetText sepsign :: IO String
-    updateDisplay displayoutput (Value (translation displayinput shortsign longsign sepsign dict label))
+    updateDisplay displayoutput (Value (concatMap (\x -> (translation x shortsign longsign sepsign dict label) ++ "\n") (lines displayinput)))
   return btn
 
 -- | Make output display show given 'Value'.
