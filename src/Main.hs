@@ -8,7 +8,7 @@ import Control.Monad.IO.Class
 import Data.IORef
 import Graphics.UI.Gtk hiding (Action, backspace)
 import System.IO  
-import qualified Data.StringMap --hiding (map)
+import qualified Data.StringMap
 import Data.Maybe
 import qualified Data.ByteString
 import Data.FileEmbed
@@ -20,6 +20,7 @@ import Trans
 dicttxt :: Data.ByteString.ByteString
 dicttxt = $(embedFile "data/morsesigns")
 
+-- | Main function with GUI loop
 main :: IO ()
 main = do
   -- read and parse dictionary file into Data.Stringmap 
@@ -100,17 +101,17 @@ main = do
 -- | 'Value' data type
 data Value = Value String
 
--- | Create a button 
+-- | Create GUI button with translation capability
 mkButton
-  :: IORef Value      -- ^ 'IORef' to input state
-  -> TextBuffer       -- ^ Our display to update
-  -> TextBuffer       -- ^ input text
-  -> Entry            -- ^ shortsign
-  -> Entry            -- ^ longsign
-  -> Entry            -- ^ sepsign
-  -> Data.StringMap.StringMap String -- ^ dictionary
-  -> String           -- ^ Button label
-  -> IO Button        -- ^ Resulting button object
+  :: IORef Value                     -- ^ 'IORef' to input state
+  -> TextBuffer                      -- ^ display to update
+  -> TextBuffer                      -- ^ display to read (user input)
+  -> Entry                           -- ^ shortsign       (sign used for "short")
+  -> Entry                           -- ^ longsign        (sign used for "long")
+  -> Entry                           -- ^ sepsign         (sign used for word separation)
+  -> Data.StringMap.StringMap String -- ^ dictionary      (from dictionary text file)
+  -> String                          -- ^ label           (button label)
+  -> IO Button                       -- ^ resulting button object
 mkButton st displayoutput displayinput shortsign longsign sepsign dict label = do
   btn <- buttonNew
   set btn [ buttonLabel := label ]
@@ -122,16 +123,16 @@ mkButton st displayoutput displayinput shortsign longsign sepsign dict label = d
     updateDisplay displayoutput (Value (concatMap (\x -> (translation x shortsign longsign sepsign dict label) ++ "\n") (lines displayinput)))
   return btn
 
--- | Make output display show given 'Value'.
+-- | Make output display show given 'Value'
 updateDisplay :: TextBuffer -> Value -> IO ()
 updateDisplay displayoutput value =
   set displayoutput [ textBufferText := renderValue value ]
 
--- | Render given 'Value'.
+-- | Extract String from given 'Value'
 renderValue :: Value -> String
 renderValue (Value x) = x
 
--- | Create label 
+-- | Create GUI label 
 myLabelWithFrameNew :: IO (Label,Frame)
 myLabelWithFrameNew = do
   label <- labelNew (Nothing :: Maybe String)

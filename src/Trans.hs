@@ -3,21 +3,20 @@ module Trans where
 import qualified Data.StringMap
 import Data.Char
 
--- | translation function
+-- | Translation function
 translation 
-  :: String            -- ^ displayinput: text to be translated
-  -> String            -- ^ shortsign: sign used for "short"
-  -> String            -- ^ longsign: sign used for "long"
-  -> String            -- ^ sepsign: sign used for "separator"
-  -> Data.StringMap.StringMap String  -- ^ dict: dictionary file
-  -> String            -- ^ label: button label
-  -> String
+  :: String                           -- ^ displayinput (text to be translated)
+  -> String                           -- ^ shortsign    (sign used for "short")
+  -> String                           -- ^ longsign     (sign used for "long")
+  -> String                           -- ^ sepsign      (sign used for word separation)
+  -> Data.StringMap.StringMap String  -- ^ dict         (from dictionary text file)
+  -> String                           -- ^ label        (button label)
+  -> String                           -- ^ result       (translated text)
 translation displayinput shortsign longsign sepsign dict label  
   | label == "code -> text" = do
       transMorse (words $ codeadjust displayinput shortsign longsign sepsign) dict label sepsign
   | label == "text -> code" = do
-      transMorse (words . addSpace . umlaut2 . toUpperString $ spaceReplace displayinput sepsign) dict label sepsign
-      -- transMorse (umlaut . words . addSpace . toUpperString $ spaceReplace displayinput sepsign) dict label sepsign
+      transMorse (words . addSpace . umlaut . toUpperString $ spaceReplace displayinput sepsign) dict label sepsign
     where
       transMorse :: [String] -> Data.StringMap.StringMap String -> String -> String -> String
       transMorse [] dict label sepsign = []
@@ -42,6 +41,7 @@ addSpace xs = if length xs <= 1
               then xs
               else take 1 xs ++ " " ++ addSpace (drop 1 xs)
 
+-- | Replace space in String with defined separation sign
 spaceReplace :: String -> String -> String
 spaceReplace [] sepsign = []
 spaceReplace (x:xs) sepsign = 
@@ -52,31 +52,18 @@ spaceReplace (x:xs) sepsign =
       | x == ' ' = sepsign
       | otherwise = [x]
 
--- | Umlaut replacement function
---umlaut :: [String] -> [String]
---umlaut [] = []
---umlaut (x:xs) = concat (map umlautrep (x:xs))
---  where 
---    umlautrep :: String -> [String]
---    umlautrep x 
---      | x == "Ä" || x == "ä" = words (addSpace "AE")
---      | x == "Ö" || x == "ö" = words (addSpace "OE")
---      | x == "Ü" || x == "ü" = words (addSpace "UE")
---      | x == "ß"             = words (addSpace "SS")
---      | otherwise = [x]
-
-umlaut2 :: String -> String
-umlaut2 [] = []
-umlaut2 xs = concat (map umlautrep2 xs)
+-- | Replace german umlauts in String
+umlaut :: String -> String
+umlaut [] = []
+umlaut xs = concat (map umlautrep xs)
   where 
-    umlautrep2 :: Char -> [Char]
-    umlautrep2 x 
+    umlautrep :: Char -> [Char]
+    umlautrep x 
       | x == 'Ä' || x == 'ä' = "AE"
       | x == 'Ö' || x == 'ö' = "OE"
       | x == 'Ü' || x == 'ü' = "UE"
       | x == 'ß'             = "SS"
       | otherwise = [x]
-
 
 -- | Replace long and short signs with "." and "-"
 codeadjust :: String -> String -> String -> String -> String
@@ -90,7 +77,7 @@ codeadjust (x:xs) shortsign longsign sepsign =
       | x == head longsign = "-"
       | otherwise = [x]
 
--- | Maske für map toUpper _ 
+-- | toUpper every char in String
 toUpperString :: String -> String
 toUpperString [] = []
 toUpperString xs = map toUpper xs
