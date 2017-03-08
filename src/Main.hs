@@ -43,11 +43,18 @@ main = do
   labelSetText longlabel "long sign"
   (seplabel,sepframe) <- myLabelWithFrameNew
   labelSetText seplabel "word separation sign"
+  (copylabel,copyframe) <- myLabelWithFrameNew
+  labelSetText copylabel "© Clemens Schmid - clemens@nevrome.de"
+  (inlabel,inframe) <- myLabelWithFrameNew
+  labelSetText inlabel "Input"
+  (outlabel,outframe) <- myLabelWithFrameNew
+  labelSetText outlabel "Output"
   -- create code and text fields
   displayinput      <- textBufferNew Nothing
   set displayinput  [ textBufferText := "enter text/code to be translated here: Fußpilz or ..-. ..- ... ... .--. .. .-.. --.." ]
   displayinputview  <- textViewNewWithBuffer displayinput
-  set displayinputview [textViewWrapMode := WrapWord]
+  set displayinputview [ textViewWrapMode := WrapWord
+                       , textViewEditable := True ]
   displayoutput     <- textBufferNew Nothing
   set displayoutput [ textBufferText := "translation" ]
   displayoutputview <- textViewNewWithBuffer displayoutput
@@ -67,16 +74,19 @@ main = do
   gridSetColumnHomogeneous grid True
   let attach x y w h item = gridAttach grid item x y w h
       mkBtn = mkButton st displayoutput displayinput shortsign longsign sepsign
-  attach 0 0 5 4 displayinputview
-  attach 0 4 6 4 displayoutputview
-  attach 3 8 1 1 shortframe
-  attach 4 8 1 1 longframe
-  attach 5 8 1 1 sepframe
-  mkBtn dict_tc "text -> code" >>= attach 5 0 1 2
-  mkBtn dict_ct "code -> text" >>= attach 5 2 1 2
-  attach 3 9 1 2 shortsign
-  attach 4 9 1 2 longsign
-  attach 5 9 1 2 sepsign
+  attach                                  0 0 6 1 inframe
+  attach                                  0 1 6 3 displayinputview
+  attach                                  0 4 4 1 outframe
+  attach                                  0 5 6 3 displayoutputview
+  attach                                  3 8 1 1 shortframe
+  attach                                  4 8 1 1 longframe
+  attach                                  5 8 1 1 sepframe
+  attach                                  0 9 2 1 copyframe
+  mkBtn dict_tc "text -> code" >>= attach 4 4 1 1
+  mkBtn dict_ct "code -> text" >>= attach 5 4 1 1
+  attach                                  3 9 1 1 shortsign
+  attach                                  4 9 1 1 longsign
+  attach                                  5 9 1 1 sepsign
   containerAdd window grid 
   widgetShowAll window
   -- close window
